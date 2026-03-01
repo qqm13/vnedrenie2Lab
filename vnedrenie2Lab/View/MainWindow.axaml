@@ -1,0 +1,168 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:vnedrenie2Lab.ViewModel"
+        xmlns:vmv="clr-namespace:vnedrenie2Lab.Models"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="vnedrenie2Lab.MainWindow"
+        x:DataType="vm:MainVM"
+        Title="vnedrenie2Lab">
+        <Window.DataContext>
+                <vm:MainVM></vm:MainVM>
+        </Window.DataContext>
+        
+        
+           <Grid Background="#F5F5F5">
+        <!-- Левая панель с брендом (для больших экранов) -->
+        <Grid ColumnDefinitions="1*, 1*">
+            <!-- Левая сторона - бренд -->
+           
+                
+                <StackPanel VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Spacing="20">
+                    <Border Width="80"
+                           Height="80"
+                           CornerRadius="40"
+                           Background="White"
+                           HorizontalAlignment="Center">
+                        <TextBlock Text="LOGO"
+                                  FontSize="24"
+                                  FontWeight="Bold"
+                                  Foreground="#2C3E50"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"/>
+                    </Border>
+                    
+                    <TextBlock Text="documents projectsNtasks"
+                              FontSize="32"
+                              FontWeight="Bold"
+                              Foreground="White"
+                              HorizontalAlignment="Center"/>
+                    
+                    <TextBlock Text="Управляйте своими задачами эффективно"
+                              FontSize="14"
+                              Foreground="#E0E0E0"
+                              HorizontalAlignment="Center"
+                              TextWrapping="Wrap"
+                              Width="250"
+                              TextAlignment="Center"/>
+                </StackPanel>
+
+            <!-- Правая сторона - форма логина -->
+            <Border Grid.Column="1"
+                    Background="White"
+                    CornerRadius="10,0,0,10"
+                    Padding="40">
+                
+                <StackPanel VerticalAlignment="Center"
+                           Spacing="25">
+                    
+                    <!-- Заголовок -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Вход в систему"
+                                  FontSize="28"
+                                  FontWeight="Bold"
+                                  Foreground="#2C3E50"/>
+                        <TextBlock Text="Введите свои данные для входа"
+                                  FontSize="14"
+                                  Foreground="#7F8C8D"/>
+                    </StackPanel>
+
+                    <!-- Поле Login с иконкой -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Email"
+                                  FontSize="12"
+                                  FontWeight="SemiBold"
+                                  Foreground="#2C3E50"/>
+                        
+                        <Border BorderBrush="#E0E0E0"
+                                BorderThickness="1"
+                                CornerRadius="5">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Grid.Column="0"
+                                        Width="45"
+                                        Background="#F8F9FA"
+                                        CornerRadius="5,0,0,5">
+                                    <TextBlock Text="📧"
+                                              FontSize="16"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBox Grid.Column="1"
+                                        BorderThickness="0"
+                                        Padding="10"
+                                        Height="45"
+                                        Watermark="example@email.com" Text="{Binding Email}"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Поле Пароль с иконкой -->
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Пароль"
+                                  FontSize="12"
+                                  FontWeight="SemiBold"
+                                  Foreground="#2C3E50"/>
+                        
+                        <Border BorderBrush="#E0E0E0"
+                                BorderThickness="1"
+                                CornerRadius="5">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Grid.Column="0"
+                                        Width="45"
+                                        Background="#F8F9FA"
+                                        CornerRadius="5,0,0,5">
+                                    <TextBlock Text="🔒"
+                                              FontSize="16"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBox Grid.Column="1"
+                                        BorderThickness="0"
+                                        Padding="10"
+                                        Height="45"
+                                        Watermark="••••••••"
+                                        PasswordChar="•" Text="{Binding Password}"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+
+                    <!-- Кнопка входа -->
+                    <Button Content="Войти"
+                           Height="50"
+                           CornerRadius="5" Command="{Binding EnterCommand}">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="Background" Value="#3498DB"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontSize" Value="16"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Style>
+                            <Style Selector="Button:pointerover">
+                                <Setter Property="Background" Value="#2980B9"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+
+                    <!-- Разделитель -->
+                    <Grid ColumnDefinitions="*,Auto,*" 
+                         Margin="0,10">
+                        <Border Grid.Column="0"
+                                Height="1"
+                                Background="#E0E0E0"
+                                VerticalAlignment="Center"/>
+                        <Border Grid.Column="2"
+                                Height="1"
+                                Background="#E0E0E0"
+                                VerticalAlignment="Center"/>
+                    </Grid>
+
+
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

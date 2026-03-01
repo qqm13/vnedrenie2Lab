@@ -1,0 +1,103 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:vnedrenie2Lab.ViewModel"
+        xmlns:vmv="clr-namespace:vnedrenie2Lab.Models"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="vnedrenie2Lab.View.Glavnoe"
+        x:DataType="vm:GlavnoeVM"
+        Title="Glavnoe">
+
+
+    
+    <!-- Эффект размытия для заголовка (опционально) -->
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+        </Style>
+        
+        <Style Selector="Button /template/ ContentPresenter">
+            <Setter Property="CornerRadius" Value="12"/>
+        </Style>
+        
+        <Style Selector="Button:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#E0E0E0"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок (опционально) -->
+        <TextBlock Text="Dashboard" 
+                   Margin="30 20 0 10" 
+                   FontSize="24" 
+                   FontWeight="Light"
+                   Foreground="#2D2D2D"/>
+
+        <!-- Контейнер для кнопок -->
+        <StackPanel Grid.Row="1" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Spacing="20">
+            
+            <!-- Уведомления -->
+            <Button Width="250" Height="60" 
+                    Background="#FF6B6B" 
+                    Foreground="White"
+                    Classes="mainButton" Command="{Binding NotificationsEnter}"> 
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                    <Border Width="24" Height="24" Background="#4A0000" CornerRadius="12">
+                        <TextBlock Text="🔔" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Уведомления(В следующих версиях)" FontSize="18" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            
+            <!-- Договора -->
+            <Button Width="250" Height="60" 
+                    Background="#4ECDC4" 
+                    Foreground="White" Command="{Binding ContractsEnter}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                    <Border Width="24" Height="24" Background="#1D6F69" CornerRadius="12">
+                        <TextBlock Text="📄" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Договора" FontSize="18" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            
+            <!-- Проекты -->
+            <Button Width="250" Height="60" 
+                    Background="#FFD93D" 
+                    Foreground="#2D2D2D" Command="{Binding ProjectsEnter}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                    <Border Width="24" Height="24" Background="#B28B1A" CornerRadius="12">
+                        <TextBlock Text="📊" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                    </Border>
+                    <TextBlock Text="Проекты" FontSize="18" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            
+            <!-- Задачи -->
+            <Button Width="250" Height="60" 
+                    Background="#6C5CE7" 
+                    Foreground="White" Command="{Binding TasksEnter}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                    <Border Width="24" Height="24" Background="#3A2C9A" CornerRadius="12">
+                        <TextBlock Text="✓" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="Задачи" FontSize="18" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

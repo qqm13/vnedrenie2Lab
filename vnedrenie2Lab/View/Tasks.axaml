@@ -1,0 +1,538 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="clr-namespace:vnedrenie2Lab.ViewModel"
+        xmlns:vmv="clr-namespace:vnedrenie2Lab.Models"
+        xmlns:converters="clr-namespace:vnedrenie2Lab.Converters"
+        x:Class="vnedrenie2Lab.View.Tasks"
+        x:DataType="vm:TasksVM"
+        Title="Tasks">
+  
+    
+    <Window.Resources>
+        <converters:DateConverter x:Key="DateConverter"/>
+        <converters:FullDateConverter x:Key="FullDateConverter"/>
+        <converters:DifficultyConverter x:Key="DifficultyConverter"/>
+        <converters:UrgentTaskColorConverter x:Key="UrgentTaskColorConverter"/>
+        <converters:IsUrgentConverter x:Key="IsUrgentConverter"/>
+        <converters:IsVeryUrgentConverter x:Key="IsVeryUrgentConverter"/>
+        <converters:TitleColorConverter x:Key="TitleColorConverter"/>
+        
+        <!-- Конвертеры для статуса -->
+        <converters:StatusToColorConverter x:Key="StatusToColorConverter"/>
+        <converters:StatusToStringConverter x:Key="StatusToStringConverter"/>
+    
+        <!-- Конвертеры для дедлайна -->
+        <converters:DeadlineProgressConverter x:Key="DeadlineProgressConverter"/>
+        <converters:DeadlineProgressColorConverter x:Key="DeadlineProgressColorConverter"/>
+        <converters:TimeLeftConverter x:Key="TimeLeftConverter"/>
+        <converters:DeadlineColorConverter x:Key="DeadlineColorConverter"/>
+    
+        <!-- Конвертер для сложности -->
+        <converters:DifficultyToStarsConverter x:Key="DifficultyToStarsConverter"/>
+    
+        <!-- Конвертер для видимости -->
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+       
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Левая панель -->
+        <Border Grid.Column="0"
+                Background="White"
+                CornerRadius="0"
+                BoxShadow="2 0 10 rgba(0,0,0,0.05)">
+            
+            <DockPanel Margin="20">
+                <!-- Профиль пользователя -->
+                <Border DockPanel.Dock="Top"
+                        Margin="0,0,0,30">
+                    <StackPanel>
+                        <Border Width="60"
+                                Height="60"
+                                CornerRadius="30"
+                                Background="#6C5CE7"
+                                Margin="0,0,0,10">
+                            <TextBlock Text="👤"
+                                       FontSize="30"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="{Binding User.FirstName}"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Foreground="#2D3436"/>
+                        <TextBlock Text="Активных задач"
+                                   FontSize="12"
+                                   Foreground="#636E72"/>
+                        <TextBlock Text="{Binding TaskCount}"
+                                   FontSize="12"
+                                   Foreground="#636E72"/>
+                    </StackPanel>
+                </Border>
+                
+                 <!-- Заголовок списка задач -->
+                <Border DockPanel.Dock="Top"
+                        Margin="0,0,0,15">
+                    <TextBlock Text="Мои задачи"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#2D3436"
+                               LetterSpacing="1"/>
+                </Border>
+                
+                <!-- Список всех задач -->
+                <ListBox x:Name="AllTasksListBox"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         SelectionMode="Single" ItemsSource="{Binding TasksAllByUser}" SelectedItem="{Binding SelectedTask}">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="Padding" Value="12"/>
+                            <Setter Property="Margin" Value="0,4"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="CornerRadius" Value="8"/>
+                      
+                        </Style>
+                        <Style Selector="ListBoxItem:pointerover">
+                            <Setter Property="Background" Value="#F5F5F5"/>
+                        </Style>
+                        <Style Selector="ListBoxItem:selected">
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="#6C5CE7" Opacity="0.1"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.Styles>
+                    
+                    <ListBox.DataTemplates>
+                        <DataTemplate DataType="vmv:Task">
+                            <Border CornerRadius="8"
+                                    Padding="10"
+                                    Background="{Binding ., Converter={StaticResource UrgentTaskColorConverter}}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- Индикатор срочности (огонь для горящих задач) -->
+                                    <Border Grid.RowSpan="2"
+                                            Grid.Column="0"
+                                            Width="24"
+                                            Height="24"
+                                            CornerRadius="12"
+                                            Background="#FF6B6B"
+                                            Margin="0,0,8,0"
+                                            IsVisible="{Binding ., Converter={StaticResource IsUrgentConverter}}">
+                                        <TextBlock Text="🔥"
+                                                   FontSize="12"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    
+                                    <!-- Заголовок -->
+                                    <StackPanel Grid.Row="0"
+                                                Grid.Column="1">
+                                        <TextBlock Text="{Binding Title}"
+                                                   FontSize="14"
+                                                   FontWeight="Medium"
+                                                   Foreground="{Binding ., Converter={StaticResource TitleColorConverter}}"/>
+                                    </StackPanel>
+                                    
+                                    <!-- Детали задачи -->
+                                    <StackPanel Grid.Row="1"
+                                                Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                Spacing="8"
+                                                Margin="0,4,0,0">
+                                        <Border Background="#6C5CE7"
+                                                CornerRadius="4"
+                                                Padding="4,2">
+                                            <TextBlock Text="{Binding Deadline, Converter={StaticResource DateConverter}}"
+                                                       FontSize="10"
+                                                       Foreground="White"/>
+                                        </Border>
+                                        <TextBlock Text="•"
+                                                   FontSize="10"
+                                                   Foreground="#B2BEC3"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Difficulty, Converter={StaticResource DifficultyConverter}}"
+                                                   FontSize="10"/>
+                                        
+                                        <!-- Дополнительный индикатор "ГОРИТ" для очень срочных -->
+                                        <Border Background="#FF6B6B"
+                                                CornerRadius="4"
+                                                Padding="4,2"
+                                                IsVisible="{Binding ., Converter={StaticResource IsVeryUrgentConverter}}">
+                                            <TextBlock Text="ГОРИТ"
+                                                       FontSize="8"
+                                                       FontWeight="Bold"
+                                                       Foreground="White"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.DataTemplates>
+                </ListBox>
+            </DockPanel>
+        </Border>
+         
+        
+        <!-- Правая панель - детальная информация о выбранной задаче -->
+<Border Grid.Column="1"
+        Margin="20"
+        CornerRadius="12"
+        Background="White"
+        BoxShadow="0 4 15 rgba(0,0,0,0.05)">
+    
+    <ScrollViewer Margin="20" VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="25">
+            
+            <!-- Заголовок задачи -->
+            <Border>
+                <TextBlock Text="{Binding SelectedTask.Title, FallbackValue='Выберите задачу'}"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="#2D3436"
+                           TextWrapping="Wrap"/>
+            </Border>
+            
+            <!-- Статус, сложность, пользователь -->
+            <WrapPanel>
+                <!-- Статус -->
+                <Border Background="{Binding SelectedTask.Status, Converter={StaticResource StatusToColorConverter}}"
+                        CornerRadius="20"
+                        Padding="14,8">
+                    <TextBlock Text="{Binding SelectedTask.Status, Converter={StaticResource StatusToStringConverter}}"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               Foreground="White"/>
+                </Border>
+                
+                <!-- Сложность -->
+                <Border Background="#F1F2F6"
+                        CornerRadius="20"
+                        Padding="14,8">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="⭐"
+                                   FontSize="13"
+                                   Foreground="#FDCB6E"/>
+                        <TextBlock Text="{Binding SelectedTask.Difficulty}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="#2D3436"/>
+                        <TextBlock Text="/5"
+                                   FontSize="12"
+                                   Foreground="#95A5A6"/>
+                    </StackPanel>
+                </Border>
+                
+                <!-- ID пользователя -->
+                <Border Background="#F1F2F6"
+                        CornerRadius="20"
+                        Padding="14,8">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="👤"
+                                   FontSize="13"
+                                   Foreground="#6C5CE7"/>
+                        <TextBlock Text="User ID:"
+                                   FontSize="12"
+                                   Foreground="#7F8C8D"/>
+                        <TextBlock Text="{Binding SelectedTask.UserId}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="#2D3436"/>
+                    </StackPanel>
+                </Border>
+                
+                <!-- ID проекта -->
+                <Border Background="#F1F2F6"
+                        CornerRadius="20"
+                        Padding="14,8">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="📁"
+                                   FontSize="13"
+                                   Foreground="#6C5CE7"/>
+                        <TextBlock Text="Проект:"
+                                   FontSize="12"
+                                   Foreground="#7F8C8D"/>
+                        <TextBlock Text="{Binding SelectedTask.ProjectId}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="#2D3436"/>
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+            
+            <!-- Дедлайн -->
+            <Border Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Срок выполнения"
+                               FontSize="13"
+                               Foreground="#7F8C8D"
+                               LetterSpacing="0.5"/>
+                    
+                    <Grid ColumnDefinitions="Auto, *">
+                        <!-- Иконка -->
+                        <Border Grid.Column="0"
+                                Width="48"
+                                Height="48"
+                                CornerRadius="24"
+                                Background="#6C5CE7"
+                                Margin="0,0,16,0">
+                            <TextBlock Text="⏰"
+                                       FontSize="24"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="White"/>
+                        </Border>
+                        
+                        <!-- Дата и время -->
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="{Binding SelectedTask.Deadline, StringFormat='{}{0:dd MMMM yyyy}'}"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2D3436"/>
+                            <TextBlock Text="{Binding SelectedTask.Deadline, StringFormat='{}{0:HH:mm}'}"
+                                       FontSize="14"
+                                       Foreground="#6C5CE7"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- Прогресс-бар времени -->
+                    <ProgressBar Value="{Binding SelectedTask.Deadline, Converter={StaticResource DeadlineProgressConverter}}"
+                                  Minimum="0"
+                                  Maximum="100"
+                                  Height="6"
+                                  Foreground="{Binding SelectedTask.Deadline, Converter={StaticResource DeadlineProgressColorConverter}}"
+                                  Background="#E0E0E0"
+                                  CornerRadius="3"
+                                  Margin="0,8,0,0"/>
+                    
+                    <!-- Оставшееся время -->
+                    <TextBlock Text="{Binding SelectedTask.Deadline, Converter={StaticResource TimeLeftConverter}}"
+                               FontSize="13"
+                               Foreground="{Binding SelectedTask.Deadline, Converter={StaticResource DeadlineColorConverter}}"
+                               HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- Описание задачи -->
+            <Border Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Описание"
+                               FontSize="13"
+                               Foreground="#7F8C8D"
+                               LetterSpacing="0.5"/>
+                    
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="16">
+                        <TextBlock Text="{Binding SelectedTask.Description, FallbackValue='Нет описания'}"
+                                   FontSize="15"
+                                   Foreground="#2D3436"
+                                   TextWrapping="Wrap"
+                                   LineHeight="22"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+            
+            <!-- Детальная информация -->
+            <Border Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Детальная информация"
+                               FontSize="13"
+                               Foreground="#7F8C8D"
+                               LetterSpacing="0.5"/>
+                    
+                    <!-- Сетка с информацией -->
+                    <Grid RowDefinitions="Auto, Auto, Auto, Auto" 
+                          ColumnDefinitions="Auto, *, Auto, *"
+                          RowSpacing="12"
+                          ColumnSpacing="16">
+                        
+                        <!-- ID задачи -->
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="🆔"
+                                   FontSize="16"
+                                   Foreground="#6C5CE7"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   Text="ID задачи:"
+                                   FontSize="14"
+                                   Foreground="#7F8C8D"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2"
+                                   Grid.ColumnSpan="2"
+                                   Text="{Binding SelectedTask.Id, FallbackValue='Не указан'}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#2D3436"
+                                   VerticalAlignment="Center"/>
+                        
+                        <!-- Пользователь -->
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="👤"
+                                   FontSize="16"
+                                   Foreground="#6C5CE7"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="Менеджер:"
+                                   FontSize="14"
+                                   Foreground="#7F8C8D"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2"
+                                   Grid.ColumnSpan="2"
+                                   Text="{Binding Manager.FirstName}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#2D3436"
+                                   VerticalAlignment="Center"/>
+                        
+                        <!-- Проект -->
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Text="📊"
+                                   FontSize="16"
+                                   Foreground="#6C5CE7"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1"
+                                   Text="Проект:"
+                                   FontSize="14"
+                                   Foreground="#7F8C8D"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2"
+                                   Grid.ColumnSpan="2"
+                                   Text="{Binding ProjHere.Title}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#2D3436"
+                                   VerticalAlignment="Center"/>
+                        
+                        <!-- Сложность -->
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Text="📊"
+                                   FontSize="16"
+                                   Foreground="#FDCB6E"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1"
+                                   Text="Сложность:"
+                                   FontSize="14"
+                                   Foreground="#7F8C8D"
+                                   VerticalAlignment="Center"/>
+                        <StackPanel Grid.Row="3" Grid.Column="2"
+                                    Grid.ColumnSpan="2"
+                                    Orientation="Horizontal"
+                                    Spacing="4"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="{Binding SelectedTask.Difficulty, Converter={StaticResource DifficultyToStarsConverter}}"
+                                       FontSize="14"
+                                       Foreground="#FDCB6E"/>
+                            <TextBlock Text="("
+                                       FontSize="14"
+                                       Foreground="#7F8C8D"/>
+                            <TextBlock Text="{Binding SelectedTask.Difficulty}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2D3436"/>
+                            <TextBlock Text="/5)"
+                                       FontSize="14"
+                                       Foreground="#7F8C8D"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+            
+            <!-- Мета-информация -->
+            <Border Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Мета-информация(в следующих версиях)"
+                               FontSize="13"
+                               Foreground="#7F8C8D"
+                               LetterSpacing="0.5"/>
+                    
+                    <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *" RowSpacing="8">
+                        <!-- Дата создания -->
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="📅"
+                                   FontSize="14"
+                                   Foreground="#6C5CE7"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   Text="Создано: сегодня"
+                                   FontSize="13"
+                                   Foreground="#2D3436"/>
+                        
+                        <!-- Последнее обновление -->
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="🔄"
+                                   FontSize="14"
+                                   Foreground="#6C5CE7"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="Обновлено: только что"
+                                   FontSize="13"
+                                   Foreground="#2D3436"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+            
+            
+            
+            <!-- Сообщение, если задача не выбрана -->
+            <Border x:Name="NoTaskSelectedMessage"
+                    Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="40"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding SelectedTask, Converter={StaticResource NullToVisibilityConverter}}">
+                <StackPanel Spacing="20"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="📋"
+                               FontSize="64"
+                               HorizontalAlignment="Center"
+                               Foreground="#BDC3C7"/>
+                    <TextBlock Text="Задача не выбрана"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="#7F8C8D"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Выберите задачу из списка слева для просмотра детальной информации"
+                               FontSize="14"
+                               Foreground="#95A5A6"
+                               HorizontalAlignment="Center"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               MaxWidth="300"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Border>
+    </Grid>
+</Window>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="vnedrenie2Lab/MainWindow.axaml" value="vnedrenie2Lab/vnedrenie2Lab.csproj" />
+        <entry key="vnedrenie2Lab/View/Contracts.axaml" value="vnedrenie2Lab/vnedrenie2Lab.csproj" />
+        <entry key="vnedrenie2Lab/View/Glavnoe.axaml" value="vnedrenie2Lab/vnedrenie2Lab.csproj" />
+        <entry key="vnedrenie2Lab/View/MainWindow.axaml" value="vnedrenie2Lab/vnedrenie2Lab.csproj" />
+        <entry key="vnedrenie2Lab/View/Notifications.axaml" value="vnedrenie2Lab/vnedrenie2Lab.csproj" />
+        <entry key="vnedrenie2Lab/View/Projects.axaml" value="vnedrenie2Lab/vnedrenie2Lab.csproj" />
+        <entry key="vnedrenie2Lab/View/Tasks.axaml" value="vnedrenie2Lab/vnedrenie2Lab.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

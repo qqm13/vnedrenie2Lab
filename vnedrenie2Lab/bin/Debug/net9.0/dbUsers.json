@@ -1,0 +1,20 @@
+[
+  {
+    "Id": 1,
+    "FirstName": "ImyaTest",
+    "SecondName": "Imya2Test",
+    "LastName": "FamTest",
+    "Email": "1",
+    "PasswordHash": "1",
+    "Role": 3
+  },
+  {
+    "Id": 2,
+    "FirstName": "ManagerName",
+    "SecondName": "b",
+    "LastName": "c",
+    "Email": "abc@gmail.com",
+    "PasswordHash": "P@ssw0rd",
+    "Role": 1
+  }
+]

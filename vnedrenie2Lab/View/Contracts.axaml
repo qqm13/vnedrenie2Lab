@@ -1,0 +1,566 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:vnedrenie2Lab.ViewModel"
+        xmlns:vmv="clr-namespace:vnedrenie2Lab.Models"
+        xmlns:converters="clr-namespace:vnedrenie2Lab.Converters"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="vnedrenie2Lab.View.Contracts"
+        x:DataType="vm:ContractsVM"
+        Title="Contracts">
+   
+        <Window.Resources>
+                <!-- Конвертеры для контрактов -->
+                <converters:ContractStatusColorConverter x:Key="ContractStatusColorConverter"/>
+                <converters:ContractStatusBackgroundConverter x:Key="ContractStatusBackgroundConverter"/>
+                <converters:ContractStatusToStringConverter x:Key="ContractStatusToStringConverter"/>
+                <converters:ContractStatusIconConverter x:Key="ContractStatusIconConverter"/>
+                <converters:RecentlyUpdatedConverter x:Key="RecentlyUpdatedConverter"/>
+                <converters:ScanExistsConverter x:Key="ScanExistsConverter"/>
+                <converters:ScanNotExistsConverter x:Key="ScanNotExistsConverter"/>
+                <converters:ScanExistsColorConverter x:Key="ScanExistsColorConverter"/>
+                <converters:ByteArrayToImageConverter x:Key="ByteArrayToImageConverter"/>
+    
+                <!-- Стандартные конвертеры -->
+                <converters:EmptyCollectionToVisibilityConverter x:Key="EmptyCollectionToVisibilityConverter"/>
+                <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        </Window.Resources>
+    
+        
+        
+        <!-- Левая панель - список контрактов -->
+<Border Grid.Column="0"
+        Background="White"
+        CornerRadius="0"
+        BoxShadow="2 0 10 rgba(0,0,0,0.05)" x:Name="Border2Border">
+    
+    <DockPanel Margin="20">
+        <!-- Заголовок и статистика -->
+        <Border DockPanel.Dock="Top"
+                Margin="0,0,0,20">
+            <Grid ColumnDefinitions="*, Auto">
+                <TextBlock Grid.Column="0"
+                           Text="Мои контракты"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#2D3436"/>
+                
+                <Border Grid.Column="1"
+                        Background="#6C5CE7"
+                        CornerRadius="12"
+                        Padding="8,4">
+                    <TextBlock Text="{Binding Contracts.Count}"
+                               FontSize="12"
+                               FontWeight="Bold"
+                               Foreground="White"/>
+                </Border>
+            </Grid>
+        </Border>
+        
+        <!-- Список контрактов -->
+        <ListBox x:Name="ContractsListBox"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 SelectionMode="Single" 
+                 ItemsSource="{Binding Contracts}" 
+                 SelectedItem="{Binding SelectedContract}">
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="Padding" Value="12"/>
+                    <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="CornerRadius" Value="8"/>
+                </Style>
+                <Style Selector="ListBoxItem:pointerover">
+                    <Setter Property="Background" Value="#F5F5F5"/>
+                </Style>
+                <Style Selector="ListBoxItem:selected">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <SolidColorBrush Color="#6C5CE7" Opacity="0.1"/>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.Styles>
+            
+            <ListBox.DataTemplates>
+                <DataTemplate DataType="vmv:Contract">
+                    <Border CornerRadius="8"
+                            Padding="12"
+                            Background="{Binding Status, Converter={StaticResource ContractStatusBackgroundConverter}}"
+                            BorderThickness="1"
+                            BorderBrush="{Binding Status, Converter={StaticResource ContractStatusColorConverter}}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Иконка статуса -->
+                            <Border Grid.RowSpan="3"
+                                    Grid.Column="0"
+                                    Width="40"
+                                    Height="40"
+                                    CornerRadius="10"
+                                    Background="{Binding Status, Converter={StaticResource ContractStatusColorConverter}}"
+                                    Margin="0,0,12,0">
+                                <TextBlock Text="{Binding Status, Converter={StaticResource ContractStatusIconConverter}}"
+                                           FontSize="20"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="White"/>
+                            </Border>
+                            
+                            <!-- Заголовок и статус -->
+                            <StackPanel Grid.Row="0"
+                                        Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="8">
+                                <TextBlock Text="{Binding Title}"
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Foreground="#2D3436"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="180"/>
+                                
+                                <!-- Бейдж статуса -->
+                                <Border Background="{Binding Status, Converter={StaticResource ContractStatusColorConverter}}"
+                                        CornerRadius="12"
+                                        Padding="6,2">
+                                    <TextBlock Text="{Binding Status, Converter={StaticResource ContractStatusToStringConverter}}"
+                                               FontSize="8"
+                                               FontWeight="Bold"
+                                               Foreground="White"/>
+                                </Border>
+                            </StackPanel>
+                            
+                            <!-- Мета-информация -->
+                            <StackPanel Grid.Row="1"
+                                        Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="12"
+                                        Margin="0,4,0,4">
+                                
+                                <!-- Дата создания -->
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="📅"
+                                               FontSize="10"
+                                               Foreground="#6C5CE7"/>
+                                    <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:dd.MM.yyyy}'}"
+                                               FontSize="10"
+                                               Foreground="#2D3436"/>
+                                </StackPanel>
+                                
+                                <!-- ID контракта -->
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="🆔"
+                                               FontSize="10"
+                                               Foreground="#6C5CE7"/>
+                                    <TextBlock Text="№{Binding Id}"
+                                               FontSize="10"
+                                               Foreground="#2D3436"/>
+                                </StackPanel>
+                            </StackPanel>
+                            
+                            <!-- Информация о проектах -->
+                            <StackPanel Grid.Row="2"
+                                        Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="8"
+                                        Margin="0,4,0,0">
+                                
+                                <!-- Количество проектов -->
+                                <Border Background="#F1F2F6"
+                                        CornerRadius="4"
+                                        Padding="6,2">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="📁"
+                                                   FontSize="9"
+                                                   Foreground="#6C5CE7"/>
+                                        <TextBlock Text="{Binding Projects.Count}"
+                                                   FontSize="9"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#2D3436"/>
+                                        <TextBlock Text="проектов"
+                                                   FontSize="8"
+                                                   Foreground="#636E72"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- Индикатор обновления -->
+                                <Border Background="#F1F2F6"
+                                        CornerRadius="4"
+                                        Padding="6,2"
+                                        IsVisible="{Binding UpdatedAt, Converter={StaticResource RecentlyUpdatedConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="🔄"
+                                                   FontSize="9"
+                                                   Foreground="#6C5CE7"/>
+                                        <TextBlock Text="обновлен"
+                                                   FontSize="8"
+                                                   Foreground="#636E72"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- Индикатор скана -->
+                                <Border Background="{Binding Scan, Converter={StaticResource ScanExistsColorConverter}}"
+                                        CornerRadius="4"
+                                        Padding="6,2"
+                                        IsVisible="{Binding Scan, Converter={StaticResource ScanExistsConverter}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="📎"
+                                                   FontSize="9"
+                                                   Foreground="White"/>
+                                        <TextBlock Text="скан"
+                                                   FontSize="8"
+                                                   Foreground="White"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.DataTemplates>
+        </ListBox>
+         <Border Grid.Column="1"
+                Margin="20"
+                CornerRadius="12"
+                Background="White"
+                BoxShadow="0 4 15 rgba(0,0,0,0.05)" 
+                x:Name="ContractsRightPanel"> <!-- Переименовал для ясности -->
+    
+            <!-- Весь контент просто внутри Border -->
+            <ScrollViewer Margin="20" 
+                          VerticalScrollBarVisibility="Auto"
+                          x:Name="ContractDetailsScrollViewer">
+                <StackPanel Spacing="25">
+            
+            <!-- Заголовок контракта -->
+            <Border>
+                <TextBlock Text="{Binding SelectedContract.Title, FallbackValue='Выберите контракт'}"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           Foreground="#2D3436"
+                           TextWrapping="Wrap"/>
+            </Border>
+            
+            <!-- ID и статус -->
+            <WrapPanel>
+                <Border Background="#F1F2F6"
+                        CornerRadius="20"
+                        Padding="12,6">
+                    <TextBlock Text="📄 Контракт №{Binding SelectedContract.Id}"
+                               FontSize="13"
+                               Foreground="#2D3436"/>
+                </Border>
+                
+                <Border Background="{Binding SelectedContract.Status, Converter={StaticResource ContractStatusColorConverter}}"
+                        CornerRadius="20"
+                        Padding="12,6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{Binding SelectedContract.Status, Converter={StaticResource ContractStatusIconConverter}}"
+                                   FontSize="12"
+                                   Foreground="White"/>
+                        <TextBlock Text="{Binding SelectedContract.Status, Converter={StaticResource ContractStatusToStringConverter}}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"/>
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+            
+            <!-- Даты создания и обновления -->
+            <Grid ColumnDefinitions="1*, 1*" RowDefinitions="Auto">
+                <!-- Дата создания -->
+                <Border Grid.Column="0"
+                        Background="#F8F9FA"
+                        CornerRadius="12"
+                        Padding="16"
+                        Margin="0,0,5,0">
+                    <StackPanel>
+                        <TextBlock Text="Дата создания"
+                                   FontSize="11"
+                                   Foreground="#636E72"
+                                   Margin="0,0,0,4"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="📅"
+                                       FontSize="16"
+                                       Foreground="#6C5CE7"/>
+                            <TextBlock Text="{Binding SelectedContract.CreatedAt, StringFormat='{}{0:dd MMMM yyyy}'}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2D3436"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding SelectedContract.CreatedAt, StringFormat='{}{0:HH:mm}'}"
+                                   FontSize="11"
+                                   Foreground="#95A5A6"
+                                   HorizontalAlignment="Right"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                
+                <!-- Дата обновления -->
+                <Border Grid.Column="1"
+                        Background="#F8F9FA"
+                        CornerRadius="12"
+                        Padding="16"
+                        Margin="5,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Последнее обновление"
+                                   FontSize="11"
+                                   Foreground="#636E72"
+                                   Margin="0,0,0,4"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="🔄"
+                                       FontSize="16"
+                                       Foreground="#6C5CE7"/>
+                            <TextBlock Text="{Binding SelectedContract.UpdatedAt, StringFormat='{}{0:dd MMMM yyyy}'}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2D3436"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding SelectedContract.UpdatedAt, StringFormat='{}{0:HH:mm}'}"
+                                   FontSize="11"
+                                   Foreground="#95A5A6"
+                                   HorizontalAlignment="Right"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            
+            <!-- Содержание контракта -->
+            <Border Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Содержание контракта"
+                               FontSize="13"
+                               Foreground="#636E72"
+                               LetterSpacing="0.5"/>
+                    
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="16">
+                        <TextBlock Text="{Binding SelectedContract.Content, FallbackValue='Нет содержания'}"
+                                   FontSize="14"
+                                   Foreground="#2D3436"
+                                   TextWrapping="Wrap"
+                                   LineHeight="22"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+            
+            <!-- Скан документа -->
+            <Border Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBlock Grid.Column="0"
+                                   Text="Скан документа(Тут фотка если что прям загружена и выведена)"
+                                   FontSize="13"
+                                   Foreground="#636E72"
+                                   LetterSpacing="0.5"/>
+                        
+                        <Border Grid.Column="1"
+                                Background="{Binding SelectedContract.Scan, Converter={StaticResource ScanExistsColorConverter}}"
+                                CornerRadius="12"
+                                Padding="8,4"
+                                IsVisible="{Binding SelectedContract.Scan, Converter={StaticResource ScanExistsConverter}}">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="📎"
+                                           FontSize="10"
+                                           Foreground="White"/>
+                                <TextBlock Text="Скан прикреплен"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           Foreground="White"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    
+                    <Border Background="White"
+                            CornerRadius="12"
+                            Padding="16">
+                        <StackPanel>
+                            <Image Source="{Binding SelectedContract.Scan, Converter={StaticResource ByteArrayToImageConverter}}"
+                                   MaxHeight="200"
+                                   Stretch="Uniform"
+                                   IsVisible="{Binding SelectedContract.Scan, Converter={StaticResource ScanExistsConverter}}"/>
+                            
+                            <StackPanel IsVisible="{Binding SelectedContract.Scan, Converter={StaticResource ScanNotExistsConverter}}"
+                                        HorizontalAlignment="Center"
+                                        Spacing="8">
+                                <TextBlock Text="📄"
+                                           FontSize="32"
+                                           HorizontalAlignment="Center"
+                                           Foreground="#BDC3C7"/>
+                                <TextBlock Text="Скан документа отсутствует"
+                                           FontSize="12"
+                                           Foreground="#95A5A6"
+                                           HorizontalAlignment="Center"/>
+                                <Button Width="120"
+                                        Height="32"
+                                        Background="#6C5CE7"
+                                        CornerRadius="16"
+                                        Margin="0,8,0,0">
+                                    <TextBlock Text="Загрузить скан"
+                                               FontSize="11"
+                                               Foreground="White"/>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+            
+            <!-- Проекты по контракту -->
+            <Border Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="20">
+                <StackPanel Spacing="16">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <TextBlock Grid.Column="0"
+                                   Text="Проекты по контракту"
+                                   FontSize="13"
+                                   Foreground="#636E72"
+                                   LetterSpacing="0.5"
+                                   VerticalAlignment="Center"/>
+                        
+                        <Border Grid.Column="1"
+                                Background="#6C5CE7"
+                                CornerRadius="12"
+                                Padding="10,4">
+                            <TextBlock Text="{Binding SelectedContract.Projects.Count}"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       Foreground="White"/>
+                        </Border>
+                    </Grid>
+                    
+                    <ItemsControl ItemsSource="{Binding SelectedContract.Projects}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="8"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        
+                        <ItemsControl.DataTemplates>
+                            <DataTemplate DataType="vmv:Project">
+                                <Border CornerRadius="8"
+                                        Background="White"
+                                        BorderThickness="1"
+                                        BorderBrush="#E0E0E0"
+                                        Padding="12">
+                                    <Grid ColumnDefinitions="Auto, *">
+                                        <Border Grid.Column="0"
+                                                Width="4"
+                                                Height="40"
+                                                Background="#6C5CE7"
+                                                CornerRadius="2"
+                                                Margin="0,0,12,0"/>
+                                        
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding Title}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#2D3436"/>
+                                            
+                                            <WrapPanel Margin="0,4,0,0"
+                                                       >
+                                                <Border Background="#F1F2F6"
+                                                        CornerRadius="4"
+                                                        Padding="6,2">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <TextBlock Text="📅"
+                                                                   FontSize="9"
+                                                                   Foreground="#6C5CE7"/>
+                                                        <TextBlock Text="{Binding StartedDate, StringFormat='{}{0:dd.MM.yyyy}'}"
+                                                                   FontSize="9"
+                                                                   Foreground="#2D3436"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                
+                                                <Border Background="#F1F2F6"
+                                                        CornerRadius="4"
+                                                        Padding="6,2">
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <TextBlock Text="👥"
+                                                                   FontSize="9"
+                                                                   Foreground="#6C5CE7"/>
+                                                        <TextBlock Text="{Binding Users.Count}"
+                                                                   FontSize="9"
+                                                                   Foreground="#2D3436"/>
+                                                        <TextBlock Text="участников"
+                                                                   FontSize="8"
+                                                                   Foreground="#636E72"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </WrapPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+                    
+                    <!-- Сообщение, если проектов нет -->
+                    <Border Background="White"
+                            CornerRadius="8"
+                            Padding="20"
+                            IsVisible="{Binding SelectedContract.Projects.Count, Converter={StaticResource EmptyCollectionToVisibilityConverter}}">
+                        <StackPanel Spacing="8"
+                                    HorizontalAlignment="Center">
+                            <TextBlock Text="📁"
+                                       FontSize="32"
+                                       HorizontalAlignment="Center"
+                                       Foreground="#BDC3C7"/>
+                            <TextBlock Text="Нет проектов по этому контракту"
+                                       FontSize="12"
+                                       Foreground="#95A5A6"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+            
+            <!-- Сообщение, если контракт не выбран -->
+            <Border x:Name="NoContractSelectedMessage"
+                    Background="#F8F9FA"
+                    CornerRadius="16"
+                    Padding="40"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding SelectedContract, Converter={StaticResource NullToVisibilityConverter}}">
+                <StackPanel Spacing="20"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="📄"
+                               FontSize="64"
+                               HorizontalAlignment="Center"
+                               Foreground="#BDC3C7"/>
+                    <TextBlock Text="Контракт не выбран"
+                               FontSize="24"
+                               FontWeight="SemiBold"
+                               Foreground="#7F8C8D"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Выберите контракт из списка слева"
+                               FontSize="14"
+                               Foreground="#95A5A6"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Border></DockPanel></Border>
+
+    
+
+       
+        
+</Window>
